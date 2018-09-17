@@ -1,6 +1,4 @@
 # utl_proc_report_useful_tips_counters_conditional_rows_templates
-Proc report useful tips counters conditional rows templates.  Keywords: sas sql join merge big data analytics macros oracle teradata mysql sas communities stackoverflow statistics artificial inteligence AI Python R Java Javascript WPS Matlab SPSS Scala Perl C C# Excel MS Access JSON graphics maps NLP natural language processing machine learning igraph DOSUBL DOW loop stackoverflow SAS community.
-
     Proc report useful tips counters conditional rows templates
 
     github
@@ -15,6 +13,7 @@ Proc report useful tips counters conditional rows templates.  Keywords: sas sql 
         4  Conditional lines
         5. Proc report lidt option
         6. Dosubl- where age is less than median age
+        7. Create a sorted, summarized and transposed dataset
 
     see
     https://tinyurl.com/y7m6g4z2
@@ -54,6 +53,7 @@ Proc report useful tips counters conditional rows templates.  Keywords: sas sql 
             7  Judy             14
             8  Louise           12
             9  Mary             15
+
        M    1  Alfred           14
             2  Henry            14
             3  James            12
@@ -139,6 +139,16 @@ Proc report useful tips counters conditional rows templates.  Keywords: sas sql 
         Robert    M         12       64.8        128
         Thomas    M         11       57.5         85
 
+
+     7. Sort, summarize and transpose
+     --------------------------------
+
+     WANT total obs=2 (output dataset from proc report)
+
+      SEX    WEIGHT    MAXHEIGHT    MINHEIGHT   TWELVE    THIRTEEN    FOURTEEN
+
+       F      536.0       65.3         56.3        2          2           2
+       M      609.5       69.0         57.3        3          1           2
 
     PROCESS
     =======
@@ -231,6 +241,20 @@ Proc report useful tips counters conditional rows templates.  Keywords: sas sql 
           ')) and age lt symgetn("age") )) missing nowd;
         run;quit;
 
+
+     7. Sort, summarize and transpose
+     --------------------------------
+
+        proc report data=sashelp.class(
+                    where=(age in (12,13,14)))
+                    out=want(rename=(_c2_=Twelve _c3_=Thirteen _c4_=Fourteen))
+                    nowd missing;
+        cols sex age weight height=maxheight height=minheight;
+        define sex / group 'Sex';
+        define maxheight / analysis max "Max Height";
+        define minheight / analysis min "Min Height";
+        define age / across  'Ages';
+        run;quit;
 
     OUTPUT
     ======
