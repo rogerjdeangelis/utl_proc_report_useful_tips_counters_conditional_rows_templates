@@ -1,5 +1,9 @@
 Proc report useful tips counters conditional rows templates
 
+github
+https://tinyurl.com/yat3vzuz
+https://github.com/rogerjdeangelis/utl_proc_report_useful_tips_counters_conditional_rows_templates
+
   Tips
 
     1. Overall sequence number
@@ -8,6 +12,7 @@ Proc report useful tips counters conditional rows templates
     4  Conditional lines
     5. Proc report lidt option
     6. Dosubl- where age is less than median age
+    7. Create a sorted, summarized and transposed dataset
 
 see
 https://tinyurl.com/y7m6g4z2
@@ -47,6 +52,7 @@ EXAMPLE OUTPUTS
         7  Judy             14
         8  Louise           12
         9  Mary             15
+
    M    1  Alfred           14
         2  Henry            14
         3  James            12
@@ -132,6 +138,16 @@ EXAMPLE OUTPUTS
     Robert    M         12       64.8        128
     Thomas    M         11       57.5         85
 
+
+ 7. Sort, summarize and transpose
+ --------------------------------
+
+ WANT total obs=2 (output dataset from proc report)
+
+  SEX    WEIGHT    MAXHEIGHT    MINHEIGHT   TWELVE    THIRTEEN    FOURTEEN
+
+   F      536.0       65.3         56.3        2          2           2
+   M      609.5       69.0         57.3        3          1           2
 
 PROCESS
 =======
@@ -225,7 +241,22 @@ PROCESS
     run;quit;
 
 
+ 7. Sort, summarize and transpose
+ --------------------------------
+
+    proc report data=sashelp.class(
+                where=(age in (12,13,14)))
+                out=want(rename=(_c2_=Twelve _c3_=Thirteen _c4_=Fourteen))
+                nowd missing;
+    cols sex age weight height=maxheight height=minheight;
+    define sex / group 'Sex';
+    define maxheight / analysis max "Max Height";
+    define minheight / analysis min "Min Height";
+    define age / across  'Ages';
+    run;quit;
+
 OUTPUT
 ======
 
 see above
+
