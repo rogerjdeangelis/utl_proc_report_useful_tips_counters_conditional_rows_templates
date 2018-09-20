@@ -14,12 +14,19 @@
         5. Proc report lidt option
         6. Dosubl- where age is less than median age
         7. Create a sorted, summarized and transposed dataset
+        8. Printing alternate lines with a "gray" background**
+
+        **Date:   Tue, 19 Dec 2000 20:05:29 GMT
+        From:     Andreas Grueninger <grueninger@IBGRUENINGER.DE>
+        Subject:  Printing alternate lines with "gray" background on SAS v8.0
 
     see
     https://tinyurl.com/y7m6g4z2
     https://communities.sas.com/t5/SAS-Programming/how-to-assign-sequence-number-in-proc-report/m-p/496014
 
-    HAVE
+
+
+    INPUT
     ====
 
       SASHELP.CLASS
@@ -150,6 +157,26 @@
        F      536.0       65.3         56.3        2          2           2
        M      609.5       69.0         57.3        3          1           2
 
+
+    8. Printing alternate lines with a "gray" background**
+    ------------------------------------------------------
+
+     d:/pdf/utl_proc_report_useful_tips_counters_conditional_rows_templates_greenbar.pdf
+
+       Name       Sex    Age    Height    Weight
+
+       Alfred      M      14     69.0      112.5
+       Alice-------F------13-----56.5-------84.0  Highlighed with gray background
+       Barbara     F      13     65.3       98.0
+       Carol-------F------14-----62.8------102.5  Highlighed with gray background
+       Henry       M      14     63.5      102.5
+       James-------M------12-----57.3-------83.0  Highlighed with gray background
+       Jane        F      12     59.8       84.5
+       Janet-------F------15-----62.5------112.5  Highlighed with gray background
+       Jeffrey     M      13     62.5       84.0
+
+
+
     PROCESS
     =======
 
@@ -256,8 +283,34 @@
         define age / across  'Ages';
         run;quit;
 
+
+     8. Printing alternate lines with a "gray" background**
+     ------------------------------------------------------
+
+        %MACRO greenbar ;
+            DEFINE _row / order COMPUTED NOPRINT ;
+            COMPUTE _row;
+               nobs+1;
+               _row = nobs;
+               IF (MOD( _row,2 )=0) THEN
+                  CALL DEFINE( _ROW_,'STYLE',"STYLE={BACKGROUND=graydd}" );
+            ENDCOMP;
+         %MEND greenbar;
+
+
+        ods pdf file="d:/pdf/utl_proc_report_useful_tips_counters_conditional_rows_templates_greenbar.pdf";
+        PROC REPORT DATA=SASHELP.CLASS(obs=9) ;
+          COLUMN  _all_ _row;
+          %greenbar;
+        RUN;QUIT;
+        ods pdf close;
+
+
     OUTPUT
     ======
 
     see above
+
+
+
 
